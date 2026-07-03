@@ -1,0 +1,26 @@
+# fly.toml — Wuzapi on Fly.io
+app = "lilychu-wuzapi"
+primary_region = "hkg"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+
+  [[services.ports]]
+    port = 8080
+    handlers = ["http"]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  [http_service.concurrency]
+    type = "connections"
+    soft_limit = 25
+
+# Persist SQLite data across deploys
+[mounts]
+  source = "wuzapi_data"
+  destination = "/app/wuzapi_data"

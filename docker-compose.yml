@@ -1,0 +1,27 @@
+# Wuzapi — single-container deployment (SQLite, no PostgreSQL, no RabbitMQ)
+# Start: docker compose up -d
+# Stop:  docker compose down
+
+services:
+  wuzapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${WUZAPI_PORT:-8080}:8080"
+    environment:
+      - WUZAPI_ADMIN_TOKEN=${WUZAPI_ADMIN_TOKEN}
+      - WUZAPI_GLOBAL_ENCRYPTION_KEY=${WUZAPI_GLOBAL_ENCRYPTION_KEY}
+      - TZ=${TZ:-Asia/Hong_Kong}
+      - WUZAPI_PORT=8080
+    volumes:
+      - wuzapi_data:/app/wuzapi_data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  wuzapi_data:
